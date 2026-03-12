@@ -117,7 +117,7 @@ class _TextEditingControllerIMCState extends State<TextEditingControllerIMC> {
       controller: _controller,
       maxLines: 1,
       // bordure autour du TextField
-      decoration: InputDecoration(border: OutlineInputBorder()),
+      decoration: const InputDecoration(border: OutlineInputBorder()),
     );
   }
 }
