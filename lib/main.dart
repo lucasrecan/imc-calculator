@@ -36,14 +36,18 @@ class IMCCalculator extends StatelessWidget {
         title: Text(title),
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
       ),
+      // le const se répercute forcément sur les widgets à l'intérieur
       body: const Padding(
         padding: EdgeInsets.all(16.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Expanded(flex: 2, child: ZoneSaisie()),
             SizedBox(height: 25.0),
-            Text('Button placeholder'),
+            ElevatedButton(
+              onPressed: null,
+              child: Text('Calculer'),
+            ),
             SizedBox(height: 25.0),
             Expanded(flex: 3, child: ZoneInfo()),
           ],
@@ -129,7 +133,7 @@ class ZoneInfo extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        border: Border.all(color: Colors.grey),
+        border: Border.all(color: Colors.grey.withValues(alpha: 0.5)),
         // bordures arrondies
         borderRadius: BorderRadius.circular(12),
       ),
