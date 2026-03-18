@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tp_imc_rcl4463a/widgets/history_screen.dart';
 import 'package:tp_imc_rcl4463a/widgets/zone_info.dart';
 import 'package:tp_imc_rcl4463a/widgets/zone_saisie.dart';
 import 'package:tp_imc_rcl4463a/models/imc_record.dart';
@@ -65,8 +66,20 @@ class IMCCalculatorState extends State<IMCCalculator> {
       // pour que le clavier passe au dessus
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
-        title: Text(widget.title),
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+          title: Text(widget.title),
+          backgroundColor: Theme
+              .of(context)
+              .colorScheme
+              .inversePrimary,
+          actions: [IconButton(
+              icon: const Icon(Icons.history),
+              onPressed: () {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (BuildContext context) =>
+                        HistoryScreen(historique: _historique, onDelete: _historique.removeAt)));
+                }
+          )
+          ]
       ),
       // le const se répercute forcément sur les widgets à l'intérieur
       body: Padding(
@@ -93,8 +106,8 @@ class IMCCalculatorState extends State<IMCCalculator> {
               flex: 3,
               child: _historique.isEmpty
                   ? const Center(
-                      child: Text("Entrez vos données pour calculer l'IMC"),
-                    )
+                child: Text("Entrez vos données pour calculer l'IMC"),
+              )
                   : ZoneInfo(imcRecord: _historique.last),
             ),
           ],
