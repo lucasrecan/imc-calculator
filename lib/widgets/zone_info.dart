@@ -6,6 +6,7 @@ import '../models/imc_model.dart';
 
 class ZoneInfo extends StatelessWidget {
   final IMCRecord imcRecord;
+
   const ZoneInfo({super.key, required this.imcRecord});
 
   @override
@@ -23,7 +24,31 @@ class ZoneInfo extends StatelessWidget {
         padding: const EdgeInsets.all(20.0),
         child: Column(
           children: [
-            const Text('Résultat IMC'),
+            const Text('Résultat IMC', style: TextStyle(fontSize: 15)),
+            // pour avoir un mélange de style dans un texte
+            Text.rich(
+              TextSpan(
+                style: const TextStyle(fontSize: 15),
+                // Style par défaut
+                children: [
+                  const TextSpan(text: 'Pour un poids de '),
+                  TextSpan(
+                    text: '${imcRecord.poids}kg',
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                    ), // EN GRAS
+                  ),
+                  const TextSpan(text: ' et une taille de '),
+                  TextSpan(
+                    text: '${imcRecord.taille.toStringAsFixed(0)}cm',
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                    ), // EN GRAS
+                  ),
+                ],
+              ),
+              textAlign: TextAlign.center,
+            ),
             const Spacer(),
             Text(
               // donne un string avec 1 chiffre après la virgule
