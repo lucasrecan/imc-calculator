@@ -1,14 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
 import 'package:tp_imc_rcl4463a/widgets/history_screen.dart';
 import 'package:tp_imc_rcl4463a/widgets/zone_info.dart';
 import 'package:tp_imc_rcl4463a/widgets/zone_saisie.dart';
-import 'package:tp_imc_rcl4463a/models/imc_record.dart';
 
+import 'package:tp_imc_rcl4463a/models/imc_model.dart';
 
 // note : CTRL-ALT-L pour formatter
 
 void main() {
-  runApp(const MyApp());
+  runApp(
+    ChangeNotifierProvider(create: (_) => IMCModel(), child: const MyApp()),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -37,10 +41,9 @@ class IMCCalculator extends StatefulWidget {
 }
 
 class IMCCalculatorState extends State<IMCCalculator> {
-  final List<IMCRecord> _historique = [];
+  // final List<IMCRecord> _historique = [];
   final TextEditingController controleurPoids = TextEditingController();
   final TextEditingController controleurTaille = TextEditingController();
-  double _imc = 0.0;
 
   void calculer() {
     // tryParse renvoie un double ou null si la conversion peut pas se faire.
@@ -49,37 +52,39 @@ class IMCCalculatorState extends State<IMCCalculator> {
     double poids = double.tryParse(controleurPoids.text) ?? 0;
     double taille = (double.tryParse(controleurTaille.text) ?? 1) / 100;
     double resultat = poids / (taille * taille);
-    // bonne pratique de mettre en interne à setState le bout de code qui
-    // nécessite de reconstruire.
-    setState(() {
-      _imc = resultat;
-      if (_imc != 0) {
-        _historique.add(IMCRecord(poids: poids, taille: taille, imc: resultat));
-      }
-      debugPrint(_historique.toString());
-    });
+    // context.read vient remplacer le setState
+    if (resultat != 0) {
+      context.read<IMCModel>().ajouterIMC(
+        poids: poids,
+        taille: taille * 100,
+        imc: resultat,
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    // On regarde le provider pour savoir quoi afficher
+    final model = context.watch<IMCModel>();
     return Scaffold(
       // pour que le clavier passe au dessus
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
-          title: Text(widget.title),
-          backgroundColor: Theme
-              .of(context)
-              .colorScheme
-              .inversePrimary,
-          actions: [IconButton(
-              icon: const Icon(Icons.history),
-              onPressed: () {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (BuildContext context) =>
-                        HistoryScreen(historique: _historique, onDelete: _historique.removeAt)));
-                }
-          )
-          ]
+        title: Text(widget.title),
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.history),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (BuildContext context) => HistoryScreen(),
+                ),
+              );
+            },
+          ),
+        ],
       ),
       // le const se répercute forcément sur les widgets à l'intérieur
       body: Padding(
@@ -104,11 +109,11 @@ class IMCCalculatorState extends State<IMCCalculator> {
             const SizedBox(height: 25.0),
             Expanded(
               flex: 3,
-              child: _historique.isEmpty
+              child: model.historique.isEmpty
                   ? const Center(
-                child: Text("Entrez vos données pour calculer l'IMC"),
-              )
-                  : ZoneInfo(imcRecord: _historique.last),
+                      child: Text("Entrez vos données pour calculer l'IMC"),
+                    )
+                  : ZoneInfo(imcRecord: model.historique.last),
             ),
           ],
         ),

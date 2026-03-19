@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:tp_imc_rcl4463a/models/imc_record.dart';
+
+import '../models/imc_model.dart';
 
 class ZoneInfo extends StatelessWidget {
   final IMCRecord imcRecord;
-
   const ZoneInfo({super.key, required this.imcRecord});
 
   @override

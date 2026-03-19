@@ -1,19 +1,13 @@
 import 'package:flutter/material.dart';
-
-import '../models/imc_record.dart';
+import 'package:provider/provider.dart';
+import '../models/imc_model.dart';
 
 class HistoryScreen extends StatelessWidget {
-  final List<IMCRecord> historique;
-  final void Function(int) onDelete;
-
-  const HistoryScreen({
-    super.key,
-    required this.historique,
-    required this.onDelete,
-  });
+  const HistoryScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final model = context.watch<IMCModel>();
     return Scaffold(
       appBar: AppBar(
         title: const Text("Historique"),
@@ -21,7 +15,7 @@ class HistoryScreen extends StatelessWidget {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: historique.isEmpty
+        child: model.historique.isEmpty
             ? const Center(
                 child: Text(
                   "L'historique est vide.",
@@ -29,16 +23,19 @@ class HistoryScreen extends StatelessWidget {
                 ),
               )
             : ListView.builder(
-                itemCount: historique.length,
+                itemCount: model.historique.length,
                 itemBuilder: (context, index) {
                   // le plus récent en haut
-                  final record = historique[historique.length - 1 - index];
+                  final record =
+                      model.historique[model.historique.length - 1 - index];
                   // le Dismissible a besoin d'une clé pour savoir quel
                   // widget supprimer précisément
                   return Dismissible(
                     key: Key(record.hashCode.toString()),
                     onDismissed: (direction) {
-                      onDelete(index);
+                      context.read<IMCModel>().supprimerIMC(
+                        model.historique.length - 1 - index,
+                      );
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(content: Text('Élément supprimé')),
                       );
@@ -79,7 +76,7 @@ class HistoryScreen extends StatelessWidget {
                       child: ListTile(
                         title: Text("IMC : ${record.imc.toStringAsFixed(1)}"),
                         subtitle: Text(
-                          "${record.poids}kg pour ${record.taille}m - ${record.qualificatif}",
+                          "${record.poids}kg pour ${record.taille.toStringAsFixed(0)}cm - ${record.qualificatif}",
                         ),
                       ),
                     ),
